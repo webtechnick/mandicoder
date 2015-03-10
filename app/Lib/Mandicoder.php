@@ -77,7 +77,7 @@ YJTCM";
 	* @param string encoded (optional)
 	* @return string decoded
 	*/
-	public function decode($string = null) {
+	public function decode($string = null, $reverse = false) {
 		if ($string !== null) {
 			$this->setEncodedString($string);
 		}
@@ -90,6 +90,27 @@ YJTCM";
 			}
 		}
 
+		return $this->parseResults($reverse);
+	}
+
+	/**
+	* Parse the results of encoding or decoding.
+	* @param boolean reverse
+	* @param boolean encoded
+	* @return string results
+	*/
+	public function parseResults($reverse = false, $encoded = false) {
+		//Encoded
+		if ($encoded) {
+			if ($reverse) {
+				$this->encoded = strrev($this->encoded);
+			}
+			return $this->encoded;
+		}
+		//Decoded
+		if ($reverse) {
+			$this->decoded = strrev($this->decoded);
+		}
 		return $this->decoded;
 	}
 
@@ -131,7 +152,7 @@ YJTCM";
 	* @param string plain (required)
 	* @return string encoded
 	*/
-	public function encode($string = null) {
+	public function encode($string = null, $reverse = false) {
 		if ($string === null) {
 			return null;
 		}
@@ -148,6 +169,6 @@ YJTCM";
 			}
 		}
 
-		return $this->encoded;
+		return $this->parseResults($reverse, true);
 	}
 }

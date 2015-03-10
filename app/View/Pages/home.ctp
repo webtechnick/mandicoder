@@ -8,6 +8,10 @@ echo $this->Form->input('data', array(
 	'type' => 'textarea',
 	'label' => 'Enter Mandi code to decode.'
 ));
+echo $this->Form->input('reverse', array(
+	'label' => 'Reverse Result',
+	'type' => 'checkbox',
+));
 echo $this->Form->end('Decode Mandi Code!');
 ?>
 
@@ -16,6 +20,10 @@ echo $this->Form->create('Encode');
 echo $this->Form->input('data', array(
 	'type' => 'textarea',
 	'label' => 'Enter plain text to encode to Mandi code.'
+));
+echo $this->Form->input('reverse', array(
+	'label' => 'Reverse Result',
+	'type' => 'checkbox',
 ));
 echo $this->Form->end('Encode Text To Mandi Code!');
 ?>
