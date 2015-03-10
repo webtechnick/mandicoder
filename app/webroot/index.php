@@ -1,4 +1,5 @@
 <?php
+require_once('../Config/wtn_config.php');
 /**
  * Index
  *
@@ -37,22 +38,6 @@ if (!defined('ROOT')) {
 if (!defined('APP_DIR')) {
 	define('APP_DIR', basename(dirname(dirname(__FILE__))));
 }
-
-/**
- * The absolute path to the "cake" directory, WITHOUT a trailing DS.
- *
- * Un-comment this line to specify a fixed path to CakePHP.
- * This should point at the directory containing `Cake`.
- *
- * For ease of development CakePHP uses PHP's include_path. If you
- * cannot modify your include_path set this value.
- *
- * Leaving this constant undefined will result in it being defined in Cake/bootstrap.php
- *
- * The following line differs from its sibling
- * /app/webroot/index.php
- */
-define('CAKE_CORE_INCLUDE_PATH',  DS . 'Users' . DS . 'nurvzy' . DS . 'Websites' . DS . 'core' . DS . 'cakephp2' . DS . 'lib');
 
 /**
  * This auto-detects CakePHP as a composer installed library.
