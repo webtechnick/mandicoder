@@ -1,5 +1,15 @@
 <?php
+/**
+* Mandi Decoder will encode and decode messages from my Mandi.
+* This is a silly class to help me write her love letters back.
+* @version 1.0
+* @author Nick Baker
+*/
 class Mandicoder extends Object {
+	/**
+	* Encoded string default
+	* @type string
+	*/
 	public $encoded = "TMZI
 
 NWGY BHS NMWKB YGYSTB OS YSB.
@@ -12,11 +22,15 @@ FGQWK SBSWTJEEF,
 YJTCM";
 
 	/**
-	* Decoded array
-	* @type array
+	* Decoded string
+	* @type string
 	*/
 	public $decoded = '';
 
+	/**
+	* Key converting code to actual letters
+	* @type array
+	*/
 	public $key = array(
 		'A' => 'V',
 		'B' => 'T',
@@ -54,7 +68,7 @@ YJTCM";
 	*/
 	public function __construct($string = null) {
 		if ($string) {
-			$this->encoded = $string;
+			$this->encoded = strtoupper($string);
 		}
 	}
 
@@ -80,7 +94,7 @@ YJTCM";
 	}
 
 	/**
-	* Reset the decoded string.
+	* Reset the class to default.
 	* @return void;
 	*/
 	public function reset() {
@@ -89,8 +103,8 @@ YJTCM";
 	}
 
 	/**
-	* Encodes a string using the key provided
-	* @param string plain
+	* Encodes a string using the key defined in class
+	* @param string plain (required)
 	* @return string encoded
 	*/
 	public function encode($string = null) {
