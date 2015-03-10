@@ -68,7 +68,7 @@ YJTCM";
 	*/
 	public function __construct($string = null) {
 		if ($string) {
-			$this->encoded = strtoupper($string);
+			$this->setEncodedString($string);
 		}
 	}
 
@@ -79,7 +79,7 @@ YJTCM";
 	*/
 	public function decode($string = null) {
 		if ($string !== null) {
-			$this->encoded = strtoupper($string);
+			$this->setEncodedString($string);
 		}
 		for ($i = 0; $i < strlen($this->encoded); $i++) {
 			$code_char = $this->encoded[$i];
@@ -91,6 +91,30 @@ YJTCM";
 		}
 
 		return $this->decoded;
+	}
+
+	/**
+	* Set the encoded string.
+	* @param string code (required)
+	* @return boolean success
+	*/
+	protected function setEncodedString($string = null) {
+		if ($string !== null) {
+			$this->encoded = strtoupper($string);
+		}
+		return !!$this->encoded;
+	}
+
+	/**
+	* Set the decoded string.
+	* @param string plain text (required)
+	* @return boolean success
+	*/
+	protected function setDecodedString($string = null) {
+		if ($string !== null) {
+			$this->decoded = strtoupper($string);
+		}
+		return !!$this->decoded;
 	}
 
 	/**
@@ -112,8 +136,8 @@ YJTCM";
 			return null;
 		}
 
-		$this->decoded = strtoupper($string);
-		$this->encoded = '';
+		$this->reset();
+		$this->setDecodedString($string);
 		for ($i = 0; $i < strlen($this->decoded); $i++) {
 			$actual_char = $this->decoded[$i];
 			$code_char = array_search($actual_char, $this->key);
