@@ -1,5 +1,5 @@
 <?php if (!empty($output)): ?>
-	<div class="notice"><?php echo $output; ?></div>
+	<div class="notice monospace"><?php echo $output; ?></div>
 <?php endif; ?>
 
 <?php

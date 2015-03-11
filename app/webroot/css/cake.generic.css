@@ -740,3 +740,8 @@ pre {
 #url-rewriting-warning {
 	display:none;
 }
+
+.monospace {
+	font-family: monospace;
+	font-size: 24px;
+}
