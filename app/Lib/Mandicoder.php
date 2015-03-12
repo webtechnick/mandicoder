@@ -159,6 +159,7 @@ YJTCM";
 
 		$this->reset();
 		$this->setDecodedString($string);
+		$this->setEngine($options['engine']);
 		for ($i = 0; $i < strlen($this->decoded); $i++) {
 			$actual_char = $this->decoded[$i];
 			$this->encoded .= $this->getCode($actual_char);
