@@ -93,7 +93,14 @@ YJTCM";
 			'X' => 'J', //J not used, assumed
 			'Y' => 'D',
 			'Z' => 'X',
-		)
+		),
+		'dateshift' => array(
+			'key' => '021415'
+		),
+	);
+
+	public $alphabet = array(
+		'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z'
 	);
 
 	/**
@@ -131,10 +138,9 @@ YJTCM";
 		if (!$this->setEngine($options['engine'])) {
 			return false;
 		}
-		for ($i = 0; $i < strlen($this->encoded); $i++) {
-			$code_char = $this->encoded[$i];
-			$this->decoded .= $this->getActual($code_char);
-		}
+
+		//Decode using the engine
+		$this->{$this->currentEngine}();
 
 		return $this->parseResults($options['reverse']);
 	}
@@ -160,10 +166,9 @@ YJTCM";
 		$this->reset();
 		$this->setDecodedString($string);
 		$this->setEngine($options['engine']);
-		for ($i = 0; $i < strlen($this->decoded); $i++) {
-			$actual_char = $this->decoded[$i];
-			$this->encoded .= $this->getCode($actual_char);
-		}
+
+		//Enode using the engine
+		$this->{$this->currentEngine}(false);
 
 		return $this->parseResults($options['reverse'], true);
 	}
@@ -198,7 +203,7 @@ YJTCM";
 	* @param string of coded character
 	* @return string of actual character or coded character if no match.
 	*/
-	public function getActual($code_char = null) {
+	private function getActual($code_char = null) {
 		if (!empty($this->key[$this->currentEngine][$code_char])) {
 			return $this->key[$this->currentEngine][$code_char];
 		}
@@ -210,7 +215,7 @@ YJTCM";
 	* @param string of actual character
 	* @param string of coded character or the actual character if no match.
 	*/
-	public function getCode($actual_char) {
+	private function getCode($actual_char) {
 		$code_char = array_search($actual_char, $this->key[$this->currentEngine]);
 		if ($code_char !== false) {
 			return $code_char;
@@ -271,5 +276,106 @@ YJTCM";
 			$this->decoded = strtoupper($string);
 		}
 		return !!$this->decoded;
+	}
+
+	/**
+	* Dateshift Engine
+	* Takes the entire encoded, maps it to
+	* a date of 021415 repeating across.
+	* @param boolean decode true
+	*/
+	private function dateshift($decode = true) {
+		$key = $this->key[$this->currentEngine]['key'];
+
+		//Decode
+		if ($decode) {
+			$key_index = 0;
+			for ($i = 0; $i < strlen($this->encoded); $i++) {
+				$code_char = $this->encoded[$i];
+				if (in_array($code_char, $this->alphabet)) {
+					if ($key_index == strlen($key)) {
+						$key_index = 0;
+					}
+					$shift = $key[$key_index];
+					//get the key of the code
+					$code_key = array_search($code_char, $this->alphabet);
+					$actual_key = $code_key - $shift;
+					if ($actual_key < 0) {
+						$actual_key = 25 - abs($actual_key); //wrap around
+					}
+					$this->decoded .= $this->alphabet[$actual_key];
+					$key_index++;
+				} else {
+					$this->decoded .= $code_char;
+				}
+			}
+			return;
+		}
+
+		//Encode
+		$key_index = 0;
+		for ($i = 0; $i < strlen($this->decoded); $i++) {
+			$actual_char = $this->decoded[$i];
+			if (in_array($actual_char, $this->alphabet)) {
+				if ($key_index == strlen($key)) {
+					$key_index = 0;
+				}
+				$shift = $key[$key_index];
+				//get the key of the code
+				$actual_key = array_search($actual_char, $this->alphabet);
+				$code_key = $actual_key + $shift;
+				if ($code_key > 25) {
+					$code_key = $code_key - 25; //wrap around
+				}
+				$this->encoded .= $this->alphabet[$code_key];
+				$key_index++;
+			} else {
+				$this->encoded .= $actual_char;
+			}
+		}
+	}
+
+	/**
+	* Original Engine
+	* @param boolean decode true
+	*/
+	private function original($decode = true) {
+		//Decode
+		if ($decode) {
+			for ($i = 0; $i < strlen($this->encoded); $i++) {
+				$code_char = $this->encoded[$i];
+				$this->decoded .= $this->getActual($code_char);
+			}
+			return;
+		}
+
+		//Encode
+		for ($i = 0; $i < strlen($this->decoded); $i++) {
+			$actual_char = $this->decoded[$i];
+			$this->encoded .= $this->getCode($actual_char);
+		}
+		return;
+	}
+
+	/**
+	* Doublecode Engine
+	* @param boolean decode true
+	*/
+	private function doublecode($decode = true) {
+		//Decode
+		if ($decode) {
+			for ($i = 0; $i < strlen($this->encoded); $i++) {
+				$code_char = $this->encoded[$i];
+				$this->decoded .= $this->getActual($code_char);
+			}
+			return;
+		}
+
+		//Encode
+		for ($i = 0; $i < strlen($this->decoded); $i++) {
+			$actual_char = $this->decoded[$i];
+			$this->encoded .= $this->getCode($actual_char);
+		}
+		return;
 	}
 }
