@@ -98,7 +98,7 @@ YJTCM";
 			'key' => '021415'
 		),
 		'nickcipher' => array(
-			'key' => 'pi' //just can't be empty
+			'key' => '31415926535897932384626433832795028841971693993751058209749445923078164062862089986280348253421170679'
 		),
 	);
 
@@ -289,21 +289,19 @@ YJTCM";
 	*/
 	private function nickcipher($decode = true) {
 		if ($decode) {
-			$this->decoded = 'NOT SO FAST BABY, YOU HAVE TO FIGURE THIS OUT ON YOUR OWN FIRST. ;)';
-			return; //dont allow decoding yet.
+			//$this->decoded = 'NOT SO FAST BABY, YOU HAVE TO FIGURE THIS OUT ON YOUR OWN FIRST. ;)';
+			//return; //dont allow decoding yet.
 
-
+			$this->encoded = str_replace("\n", "\n ", $this->encoded);
 			$encoded_words = explode(' ', $this->encoded);
-			$words = array();
 			foreach ($encoded_words as $encoded_word) {
 				$length = strlen($encoded_word);
-				$key = $this->bcpi($length);
-				$key = str_replace(".",'',$key); //remove the . we want the number.
+				$key = $this->key[$this->currentEngine]['key'];
 				$word = ""; //empty string to start
 				for ($i = 0; $i < strlen($encoded_word); $i++) {
 					$code_char = $encoded_word[$i];
+					$shift = $key[$i];
 					if (in_array($code_char, $this->alphabet)) {
-						$shift = $key[$i];
 						$code_key = array_search($code_char, $this->alphabet);
 						$actual_key = $code_key - $shift;
 						if ($actual_key < 0) {
@@ -321,17 +319,17 @@ YJTCM";
 		}
 
 		//Encode
+		$this->decoded = str_replace("\n", "\n ", $this->decoded);
 		$words = explode(' ', $this->decoded);
 		$encoded_words = array();
 		foreach ($words as $word) {
 			$length = strlen($word);
-			$key = $this->bcpi($length);
-			$key = str_replace(".",'',$key); //remove the . we want the number.
+			$key = $this->key[$this->currentEngine]['key'];
 			$encoded_word = ""; //empty string to start
 			for ($i = 0; $i < strlen($word); $i++) {
 				$actual_char = $word[$i];
+				$shift = $key[$i];
 				if (in_array($actual_char, $this->alphabet)) {
-					$shift = $key[$i];
 					//Get the code of the actual code
 					$actual_key = array_search($actual_char, $this->alphabet);
 					$code_key = $actual_key + $shift;
