@@ -97,6 +97,9 @@ YJTCM";
 		'dateshift' => array(
 			'key' => '021415'
 		),
+		'nickcipher' => array(
+			'key' => 'pi' //just can't be empty
+		),
 	);
 
 	public $alphabet = array(
@@ -199,6 +202,61 @@ YJTCM";
 	}
 
 	/**
+	* Reset the class to default.
+	* @return void;
+	*/
+	public function reset() {
+		$this->decoded = '';
+		$this->encoded = '';
+		$this->currentEngine = 'original';
+	}
+
+	/**
+	* Parse the results of encoding or decoding.
+	* @param boolean reverse
+	* @param boolean encoded
+	* @return string results
+	*/
+	protected function parseResults($reverse = false, $encoded = false) {
+		//Encoded
+		if ($encoded) {
+			if ($reverse) {
+				$this->encoded = strrev($this->encoded);
+			}
+			return $this->encoded;
+		}
+		//Decoded
+		if ($reverse) {
+			$this->decoded = strrev($this->decoded);
+		}
+		return $this->decoded;
+	}
+
+	/**
+	* Set the encoded string.
+	* @param string code (required)
+	* @return boolean success
+	*/
+	protected function setEncodedString($string = null) {
+		if ($string !== null) {
+			$this->encoded = strtoupper($string);
+		}
+		return !!$this->encoded;
+	}
+
+	/**
+	* Set the decoded string.
+	* @param string plain text (required)
+	* @return boolean success
+	*/
+	protected function setDecodedString($string = null) {
+		if ($string !== null) {
+			$this->decoded = strtoupper($string);
+		}
+		return !!$this->decoded;
+	}
+
+	/**
 	* Return the actual character from coded character
 	* @param string of coded character
 	* @return string of actual character or coded character if no match.
@@ -224,58 +282,70 @@ YJTCM";
 	}
 
 	/**
-	* Parse the results of encoding or decoding.
-	* @param boolean reverse
-	* @param boolean encoded
-	* @return string results
+	* Encode each word using shifting with pi
+	* Use the length of the word coresponding to pi and shift each letter according to it
+	* @param boolena decode (default true)
+	* @return void
 	*/
-	public function parseResults($reverse = false, $encoded = false) {
-		//Encoded
-		if ($encoded) {
-			if ($reverse) {
-				$this->encoded = strrev($this->encoded);
+	private function nickcipher($decode = true) {
+		if ($decode) {
+			$this->decoded = 'NOT SO FAST BABY, YOU HAVE TO FIGURE THIS OUT ON YOUR OWN FIRST. ;)';
+			return; //dont allow decoding yet.
+
+
+			$encoded_words = explode(' ', $this->encoded);
+			$words = array();
+			foreach ($encoded_words as $encoded_word) {
+				$length = strlen($encoded_word);
+				$key = $this->bcpi($length);
+				$key = str_replace(".",'',$key); //remove the . we want the number.
+				$word = ""; //empty string to start
+				for ($i = 0; $i < strlen($encoded_word); $i++) {
+					$code_char = $encoded_word[$i];
+					if (in_array($code_char, $this->alphabet)) {
+						$shift = $key[$i];
+						$code_key = array_search($code_char, $this->alphabet);
+						$actual_key = $code_key - $shift;
+						if ($actual_key < 0) {
+							$actual_key = 25 - abs($actual_key); //wrap around
+						}
+						$word .= $this->alphabet[$actual_key];
+					} else {
+						$word .= $code_char;
+					}
+				}
+				$words[] = $word;
 			}
-			return $this->encoded;
+			$this->decoded = implode(' ', $words);
+			return;
 		}
-		//Decoded
-		if ($reverse) {
-			$this->decoded = strrev($this->decoded);
-		}
-		return $this->decoded;
-	}
 
-	/**
-	* Reset the class to default.
-	* @return void;
-	*/
-	public function reset() {
-		$this->decoded = '';
-		$this->encoded = '';
-		$this->currentEngine = 'original';
-	}
-
-	/**
-	* Set the encoded string.
-	* @param string code (required)
-	* @return boolean success
-	*/
-	protected function setEncodedString($string = null) {
-		if ($string !== null) {
-			$this->encoded = strtoupper($string);
+		//Encode
+		$words = explode(' ', $this->decoded);
+		$encoded_words = array();
+		foreach ($words as $word) {
+			$length = strlen($word);
+			$key = $this->bcpi($length);
+			$key = str_replace(".",'',$key); //remove the . we want the number.
+			$encoded_word = ""; //empty string to start
+			for ($i = 0; $i < strlen($word); $i++) {
+				$actual_char = $word[$i];
+				if (in_array($actual_char, $this->alphabet)) {
+					$shift = $key[$i];
+					//Get the code of the actual code
+					$actual_key = array_search($actual_char, $this->alphabet);
+					$code_key = $actual_key + $shift;
+					if ($code_key > 25) {
+						$code_key = $code_key - 25; //wrap around
+					}
+					$encoded_word .= $this->alphabet[$code_key];
+				} else {
+					$encoded_word .= $actual_char;
+				}
+			}
+			$encoded_words[] = $encoded_word;
 		}
-		return !!$this->encoded;
-	}
-
-	/**
-	* Set the decoded string.
-	* @param string plain text (required)
-	* @return boolean success
-	*/
-	protected function setDecodedString($string = null) {
-		if ($string !== null) {
-			$this->decoded = strtoupper($string);
-		}
-		return !!$this->decoded;
+		$this->encoded = implode(' ', $encoded_words);
 	}
 
 	/**
@@ -377,5 +447,30 @@ YJTCM";
 			$this->encoded .= $this->getCode($actual_char);
 		}
 		return;
+	}
+
+	/**
+	* Get pi to precicion Utility function
+	* @access public
+	* @param precicion 14
+	*/
+	public function bcpi($precision = 14) {
+		$limit = ceil(log($precision)/log(2))-1;
+		bcscale($precision+6);
+		$a = 1;
+		$b = bcdiv(1,bcsqrt(2));
+		$t = 1/4;
+		$p = 1;
+		$n = 0;
+		while ($n < $limit) {
+			$x = bcdiv(bcadd($a,$b),2);
+			$y = bcsqrt(bcmul($a, $b));
+			$t = bcsub($t, bcmul($p,bcpow(bcsub($a,$x),2)));
+			$a = $x;
+			$b = $y;
+			$p = bcmul(2,$p);
+			++$n;
+		}
+		return bcdiv(bcpow(bcadd($a, $b),2),bcmul(4,$t),$precision);
 	}
 }
