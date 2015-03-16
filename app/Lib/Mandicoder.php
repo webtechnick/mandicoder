@@ -289,9 +289,6 @@ YJTCM";
 	*/
 	private function nickcipher($decode = true) {
 		if ($decode) {
-			$this->decoded = 'NOT SO FAST BABY, YOU HAVE TO FIGURE THIS OUT ON YOUR OWN FIRST. ;)';
-			return; //dont allow decoding yet.
-
 			$this->encoded = str_replace("\n", "\n ", $this->encoded);
 			$encoded_words = explode(' ', $this->encoded);
 			foreach ($encoded_words as $encoded_word) {
