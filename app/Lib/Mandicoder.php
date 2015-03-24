@@ -66,7 +66,7 @@ YJTCM";
 			'Y' => 'M',
 			'Z' => 'C',
 		),
-		'doublecode' => array(
+		'double_code' => array(
 			'A' => 'R',
 			'B' => 'Q', //Q not used, assumed
 			'C' => 'W',
@@ -94,11 +94,14 @@ YJTCM";
 			'Y' => 'D',
 			'Z' => 'X',
 		),
-		'dateshift' => array(
+		'date_shift' => array(
 			'key' => '021415'
 		),
-		'nickcipher' => array(
+		'nick_cipher' => array(
 			'key' => '31415926535897932384626433832795028841971693993751058209749445923078164062862089986280348253421170679'
+		),
+		'algorithms_eyeglass_push' => array(
+			'key' => 'ALGORITHMSANDMATHSTUFF'
 		),
 	);
 
@@ -143,7 +146,8 @@ YJTCM";
 		}
 
 		//Decode using the engine
-		$this->{$this->currentEngine}();
+		call_user_func(array($this, 'engine_' . $this->currentEngine));
+		//$this->{$this->currentEngine}();
 
 		return $this->parseResults($options['reverse']);
 	}
@@ -171,7 +175,8 @@ YJTCM";
 		$this->setEngine($options['engine']);
 
 		//Enode using the engine
-		$this->{$this->currentEngine}(false);
+		call_user_func(array($this, 'engine_' . $this->currentEngine), false);
+		//$this->engine_{$this->currentEngine}(false);
 
 		return $this->parseResults($options['reverse'], true);
 	}
@@ -194,9 +199,10 @@ YJTCM";
 	* @return array of engines.
 	*/
 	public function getEngines() {
+		App::uses('Inflector','Utility');
 		$retval = array();
 		foreach ($this->key as $engine => $ignore) {
-			$retval[$engine] = $engine;
+			$retval[$engine] = Inflector::humanize($engine);
 		}
 		return $retval;
 	}
@@ -281,13 +287,69 @@ YJTCM";
 		return $actual_char;
 	}
 
+	private function engine_algorithms_eyeglass_push($decode = true) {
+		$key = $this->key[$this->currentEngine]['key'];
+
+		//Decode
+		if ($decode) {
+			$key_index = 0;
+			for ($i = 0; $i < strlen($this->encoded); $i++) {
+				$code_char = $this->encoded[$i];
+				if (in_array($code_char, $this->alphabet)) {
+					if ($key_index == strlen($key)) {
+						$key_index = 0;
+					}
+					$key_char = $key[$key_index];
+					$shift = array_search($key_char, $this->alphabet);
+					//Get the shift from the alphabet
+
+					//get the key of the code
+					$code_key = array_search($code_char, $this->alphabet);
+					$actual_key = $code_key - $shift;
+					if ($actual_key < 0) {
+						$actual_key = 25 - abs($actual_key); //wrap around
+					}
+					$this->decoded .= $this->alphabet[$actual_key];
+					$key_index++;
+				} else {
+					$this->decoded .= $code_char;
+				}
+			}
+			return;
+		}
+
+		//Encode
+		$key_index = 0;
+		for ($i = 0; $i < strlen($this->decoded); $i++) {
+			$actual_char = $this->decoded[$i];
+			if (in_array($actual_char, $this->alphabet)) {
+				if ($key_index == strlen($key)) {
+					$key_index = 0;
+				}
+				$key_char = $key[$key_index];
+				$shift = array_search($key_char, $this->alphabet);
+				//get the key of the code
+				$actual_key = array_search($actual_char, $this->alphabet);
+				$code_key = $actual_key + $shift;
+				if ($code_key > 25) {
+					$code_key = $code_key - 25; //wrap around
+				}
+				$this->encoded .= $this->alphabet[$code_key];
+				$key_index++;
+			} else {
+				$this->encoded .= $actual_char;
+			}
+		}
+
+	}
+
 	/**
 	* Encode each word using shifting with pi
 	* Use the length of the word coresponding to pi and shift each letter according to it
 	* @param boolena decode (default true)
 	* @return void
 	*/
-	private function nickcipher($decode = true) {
+	private function engine_nick_cipher($decode = true) {
 		if ($decode) {
 			$this->encoded = str_replace("\n", "\n ", $this->encoded);
 			$encoded_words = explode(' ', $this->encoded);
@@ -349,7 +411,7 @@ YJTCM";
 	* a date of 021415 repeating across.
 	* @param boolean decode true
 	*/
-	private function dateshift($decode = true) {
+	private function engine_date_shift($decode = true) {
 		$key = $this->key[$this->currentEngine]['key'];
 
 		//Decode
@@ -404,7 +466,7 @@ YJTCM";
 	* Original Engine
 	* @param boolean decode true
 	*/
-	private function original($decode = true) {
+	private function engine_original($decode = true) {
 		//Decode
 		if ($decode) {
 			for ($i = 0; $i < strlen($this->encoded); $i++) {
@@ -426,7 +488,7 @@ YJTCM";
 	* Doublecode Engine
 	* @param boolean decode true
 	*/
-	private function doublecode($decode = true) {
+	private function engine_double_code($decode = true) {
 		//Decode
 		if ($decode) {
 			for ($i = 0; $i < strlen($this->encoded); $i++) {
@@ -442,30 +504,5 @@ YJTCM";
 			$this->encoded .= $this->getCode($actual_char);
 		}
 		return;
-	}
-
-	/**
-	* Get pi to precicion Utility function
-	* @access public
-	* @param precicion 14
-	*/
-	public function bcpi($precision = 14) {
-		$limit = ceil(log($precision)/log(2))-1;
-		bcscale($precision+6);
-		$a = 1;
-		$b = bcdiv(1,bcsqrt(2));
-		$t = 1/4;
-		$p = 1;
-		$n = 0;
-		while ($n < $limit) {
-			$x = bcdiv(bcadd($a,$b),2);
-			$y = bcsqrt(bcmul($a, $b));
-			$t = bcsub($t, bcmul($p,bcpow(bcsub($a,$x),2)));
-			$a = $x;
-			$b = $y;
-			$p = bcmul(2,$p);
-			++$n;
-		}
-		return bcdiv(bcpow(bcadd($a, $b),2),bcmul(4,$t),$precision);
 	}
 }
