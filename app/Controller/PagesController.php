@@ -4,6 +4,11 @@ class PagesController extends AppController {
 
 	public $uses = array();
 
+	public function beforeFilter() {
+		parent::beforeFilter();
+		$this->Auth->allow('home');
+	}
+
 	public function home() {
 		$this->Mandicoder->reset();
 		if (!empty($this->request->data)) {

@@ -140,7 +140,7 @@
  *	`manager_index()` and `/manager/controller/index`
  *
  */
-	//Configure::write('Routing.prefixes', array('admin'));
+Configure::write('Routing.prefixes', array('admin'));
 
 /**
  * Turn off all caching application-wide.
@@ -363,3 +363,12 @@ Cache::config('_cake_model_', array(
 	'serialize' => ($engine === 'File'),
 	'duration' => $duration
 ));
+
+/**
+* config/core.local.php Example:
+Configure::write('debug', 2);
+Configure::write('env', 'dev');
+*/
+if (file_exists(APP . 'Config/core.local.php')) {
+  include_once(APP . 'Config/core.local.php');
+}
