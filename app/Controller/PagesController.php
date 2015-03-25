@@ -1,13 +1,11 @@
 <?php
-App::uses('Mandicoder', 'Lib');
 App::uses('AppController', 'Controller');
 class PagesController extends AppController {
 
 	public $uses = array();
-	public $Mandicoder = null;
 
 	public function home() {
-		$this->Mandicoder = new Mandicoder();
+		$this->Mandicoder->reset();
 		if (!empty($this->request->data)) {
 			$output = null;
 			if (!empty($this->request->data['Decode']['data'])) {
