@@ -21,7 +21,8 @@ class AppSchema extends CakeSchema {
 			'engine' => array('column' => 'engine', 'unique' => 0),
 			'is_reverse' => array('column' => 'is_reverse', 'unique' => 0),
 			'created' => array('column' => 'created', 'unique' => 0),
-			'modified' => array('column' => 'modified', 'unique' => 0)
+			'modified' => array('column' => 'modified', 'unique' => 0),
+			'user_id' => array('column' => 'user_id', 'unique' => 0)
 		),
 		'tableParameters' => array('charset' => 'utf8', 'collate' => 'utf8_general_ci', 'engine' => 'InnoDB')
 	);

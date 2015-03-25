@@ -1,9 +1,6 @@
 <?php
 App::uses('AppModel', 'Model');
-/**
- * Code Model
- *
- */
+App::uses('AuthComponent','Controller/Component');
 class Code extends AppModel {
 
 /**
@@ -12,6 +9,10 @@ class Code extends AppModel {
  * @var string
  */
 	public $displayField = 'engine';
+
+	public $belongsTo = array(
+		'User'
+	);
 
 /**
  * Validation rules
@@ -75,6 +76,7 @@ class Code extends AppModel {
 		if ($this->hasAny($data)) {
 			return true;
 		}
+		$data['user_id'] = $this->getUserId();
 		return $this->saveAll($data);
 	}
 }

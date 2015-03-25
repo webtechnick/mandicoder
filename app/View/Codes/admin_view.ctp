@@ -8,12 +8,12 @@
 		</dd>
 		<dt><?php echo __('Decoded'); ?></dt>
 		<dd>
-			<?php echo h($code['Code']['decoded']); ?>
+			<?php echo nl2br($code['Code']['decoded']); ?>
 			&nbsp;
 		</dd>
 		<dt><?php echo __('Encoded'); ?></dt>
 		<dd>
-			<?php echo h($code['Code']['encoded']); ?>
+			<?php echo nl2br($code['Code']['encoded']); ?>
 			&nbsp;
 		</dd>
 		<dt><?php echo __('Engine'); ?></dt>
