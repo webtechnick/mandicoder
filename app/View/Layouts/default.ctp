@@ -20,7 +20,7 @@
 <body>
 	<div id="container">
 		<div id="header">
-			<h1>ManDicoder</h1>
+			<h1><a href="/">ManDicoder</a></h1>
 		</div>
 		<div id="content">
 
