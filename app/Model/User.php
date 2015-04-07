@@ -9,9 +9,9 @@ App::uses('AppModel', 'Model');
  */
 class User extends AppModel {
 
-	public $hasMany = [
+	public $hasMany = array(
 		'Code'
-	];
+	);
 
 /**
  * Validation rules
