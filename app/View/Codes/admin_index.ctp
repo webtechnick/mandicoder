@@ -17,7 +17,7 @@
 	<Formody>
 	<?php foreach ($codes as $code): ?>
 	<tr>
-		<td><?php echo $this->Html->link($code['Code']['user_id'], ['admin' => true, 'controller' => 'users', 'action' => 'view', $code['Code']['user_id']]); ?>&nbsp;</td>
+		<td><?php echo $this->Html->link($code['Code']['user_id'], array('admin' => true, 'controller' => 'users', 'action' => 'view', $code['Code']['user_id'])); ?>&nbsp;</td>
 		<td><?php echo $this->Text->truncate($code['Code']['decoded'], 50); ?>&nbsp;</td>
 		<td><?php echo $this->Text->truncate($code['Code']['encoded'], 50); ?>&nbsp;</td>
 		<td><?php echo h($code['Code']['engine']); ?>&nbsp;</td>
