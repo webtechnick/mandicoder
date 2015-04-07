@@ -1,7 +1,7 @@
 <?php
 App::uses('Model', 'Model');
 class AppModel extends Model {
-	public $actsAs = ['Containable'];
+	public $actsAs = array('Containable');
 	public $recursive = -1;
 	/**
 	* returns the user_id/member_id for a logged in member/user
