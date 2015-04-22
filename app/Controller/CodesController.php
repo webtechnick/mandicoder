@@ -1,12 +1,5 @@
 <?php
 App::uses('AppController', 'Controller');
-/**
- * Codes Controller
- *
- * @property Code $Code
- * @property PaginatorComponent $Paginator
- * @property SessionComponent $Session
- */
 class CodesController extends AppController {
 
 /**
@@ -15,6 +8,10 @@ class CodesController extends AppController {
  * @var array
  */
 	public $components = array('Paginator', 'Session');
+
+	public function beforeFilter() {
+		return parent::beforeFilter();
+	}
 
 /**
  * admin_index method
