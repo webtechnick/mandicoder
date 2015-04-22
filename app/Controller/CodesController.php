@@ -94,8 +94,7 @@ class CodesController extends AppController {
 		if (!$this->Code->exists()) {
 			throw new NotFoundException(__('Invalid code'));
 		}
-		$this->request->allowMethod('post', 'delete');
-		if ($this->Code->delete()) {
+		if ($this->Code->delete($i)) {
 			$this->Session->setFlash(__('The code has been deleted.'));
 		} else {
 			$this->Session->setFlash(__('The code could not be deleted. Please, try again.'));
