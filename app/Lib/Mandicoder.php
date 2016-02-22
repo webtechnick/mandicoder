@@ -66,6 +66,34 @@ YJTCM";
 			'Y' => 'M',
 			'Z' => 'C',
 		),
+		'valentines_code' => array(
+			'A' => 'W',
+			'B' => 'M',
+			'C' => 'S',
+			'D' => 'E',
+			'E' => 'A',
+			'F' => 'Y',
+			'G' => 'G',
+			'H' => 'K',
+			'I' => 'U',
+			'J' => 'G',
+			'K' => 'T',
+			'L' => 'B', //Q not used, assumed
+			'M' => 'M',
+			'N' => 'X',
+			'O' => 'I',
+			'P' => 'V', //J not used, assumed
+			'Q' => 'O',
+			'R' => 'R', //B not used, assumed
+			'S' => 'L',
+			'T' => 'D',
+			'U' => 'P',
+			'V' => 'C', //X not used, assumed
+			'W' => 'R',
+			'X' => 'N', //Z not used, assumed
+			'Y' => 'H',
+			'Z' => 'F',
+		),
 		'double_code' => array(
 			'A' => 'R',
 			'B' => 'Q', //Q not used, assumed
@@ -287,6 +315,8 @@ YJTCM";
 		return $actual_char;
 	}
 
+
+
 	private function engine_algorithms_eyeglass_push($decode = true) {
 		$key = $this->key[$this->currentEngine]['key'];
 
@@ -460,6 +490,24 @@ YJTCM";
 				$this->encoded .= $actual_char;
 			}
 		}
+	}
+
+	private function engine_valentines_code($decode = true) {
+		//Decode
+		if ($decode) {
+			for ($i = 0; $i < strlen($this->encoded); $i++) {
+				$code_char = $this->encoded[$i];
+				$this->decoded .= $this->getActual($code_char);
+			}
+			return;
+		}
+
+		//Encode
+		for ($i = 0; $i < strlen($this->decoded); $i++) {
+			$actual_char = $this->decoded[$i];
+			$this->encoded .= $this->getCode($actual_char);
+		}
+		return;
 	}
 
 	/**
